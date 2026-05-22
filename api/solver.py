@@ -74,6 +74,17 @@ def solve_schedule(request_data: dict):
         elif pa["area"] == "yellow":
             model.Add(Y[d, p] == 1)
 
+    # 4.5. Yellow Area Contiguous Block Constraint
+    # Enforce that the yellow shifts for each doctor are a single continuous block.
+    for d in range(num_doctors):
+        starts = [Y[d, 0]]
+        for p in range(1, 60):
+            start_var = model.NewBoolVar(f"Y_start_{d}_{p}")
+            # start_var >= Y[d, p] - Y[d, p-1]
+            model.Add(start_var - Y[d, p] + Y[d, p-1] >= 0)
+            starts.append(start_var)
+        model.Add(sum(starts) <= 1)
+
     # 5. Workload Balance
     total_green_1 = {}
     total_green_2 = {}
