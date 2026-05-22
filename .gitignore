@@ -25,3 +25,4 @@ dist-ssr
 
 api/venv/
 api/__pycache__/
+.vercel
